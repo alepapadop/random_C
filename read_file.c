@@ -3,72 +3,84 @@
 #include <stdlib.h>
 
 #define BUFFER 1024
+#define DEBUG 1
 
 FILE *open_file(char *filename);
-void read_header(FILE *fp,int *header);
+int * read_header(FILE *fp);
 void read_nodes(FILE *fp,int num_of_nodes,float *x,float *y,float *z);
-void read_elements(FILE *fp,int num_of_elements,int *efirst,int *esecond,int *ethird,int *efourth);
-void read_vol(FILE *fp,int num_of_vols, int *vfirst,int *vsecond,int *vthird,int *vfourth,int *vfifth,int *vsixth,int *vseventh,int *veighth);
-
+void read_elements(FILE *fp,int num_of_elements,int *e1,int *e2,int *e3,int *e4);
+void read_vol(FILE *fp, int num_of_vols, int *v1, int *v2, int *v3, int *v4, int *v5, int *v6, int *v7, int *v8);
+float *alloc_mem_nodes(int num_of_nodes);
+int *alloc_mem_elements(int num_of_elements);
+int *alloc_mem_volumes(int num_of_volumess);
 
 int main(){
 	
 	char filename[] = "test_data";
-	FILE *fp;
-	int i = 0;
-	int *header;
-	int size;
-	float *x,*y,*z;
-	int *efirst,*esecond,*ethird,*efourth;	
-	int *vfirst,*vsecond,*vthird,*vfourth,*vfifth,*vsixth,*vseventh,*veighth;
+	FILE *fp = NULL;
+	int *header = NULL;
+	float *x = NULL, *y = NULL, *z = NULL;
+	int *e1 = NULL, *e2 = NULL, *e3 = NULL, *e4 = NULL;	
+	int *v1 = NULL, *v2 = NULL, *v3 = NULL, *v4 = NULL, *v5 = NULL, *v6 = NULL, *v7 = NULL, *v8 = NULL;
 
-	header = (int *)malloc(sizeof(int));
 	
 	fp = open_file(filename);		
 		
-	read_header(fp,header);
+	header = read_header(fp);
+	
+	if(header [0]){
 
-	x = (float *)malloc(sizeof(float)*header[0]);
-	y = (float *)malloc(sizeof(float)*header[0]);
-	z = (float *)malloc(sizeof(float)*header[0]);
+		x = alloc_mem_nodes(header[0]);	
+		y = alloc_mem_nodes(header[0]);
+		z = alloc_mem_nodes(header[0]);
 
-	read_nodes(fp,header[0],x,y,z);
+		read_nodes(fp, header[0], x, y, z);
+	}
 
-	efirst = (int *)malloc(sizeof(int)*header[1]);
-	esecond = (int *)malloc(sizeof(int)*header[1]);
-	ethird = (int *)malloc(sizeof(int)*header[1]);
-	efourth = (int *)malloc(sizeof(int)*header[1]);
+	if(header[1]){
+		
+		e1 = alloc_mem_elements(header[1]);
+		e2 = alloc_mem_elements(header[1]);
+		e3 = alloc_mem_elements(header[1]);
+		e4 = alloc_mem_elements(header[1]);
 
-	read_elements(fp,header[1],efirst,esecond,ethird,efourth);
+		read_elements(fp, header[1], e1, e2, e3, e4);
+	}
 
-	vfirst = (int *)malloc(sizeof(int)*header[2]);
-	vsecond = (int *)malloc(sizeof(int)*header[2]);
-	vthird = (int *)malloc(sizeof(int)*header[2]);
-	vfourth = (int *)malloc(sizeof(int)*header[2]);
-	vfifth = (int *)malloc(sizeof(int)*header[2]);
-	vsixth = (int *)malloc(sizeof(int)*header[2]);
-	vseventh = (int *)malloc(sizeof(int)*header[2]);
-	veighth = (int *)malloc(sizeof(int)*header[2]);
+	if(header[2]){
 
-	read_vol(fp,header[2],vfirst,vsecond,vthird,vfourth,vfifth,vsixth,vseventh,veighth);
+		v1 = alloc_mem_volumes(header[2]); 
+		v2 = alloc_mem_volumes(header[2]); 
+		v3 = alloc_mem_volumes(header[2]); 
+		v4 = alloc_mem_volumes(header[2]); 
+		v5 = alloc_mem_volumes(header[2]); 
+		v6 = alloc_mem_volumes(header[2]); 
+		v7 = alloc_mem_volumes(header[2]); 
+		v8 = alloc_mem_volumes(header[2]); 
+
+		read_vol(fp,header[2], v1, v2, v3, v4, v5, v6, v7, v8);
+
+	}
 
 	fclose(fp);
 
+	return 0;
+
 }
 
-void read_vol(FILE *fp,int num_of_vols, int *vfirst,int *vsecond,int *vthird,int *vfourth,int *vfifth,int *vsixth,int *vseventh,int *veighth)
+void read_vol(FILE *fp, int num_of_volumes, int *v1, int *v2, int *v3 ,int *v4, int *v5, int *v6, int *v7, int *v8)
 {
 
 	int i;
 	char buffer[BUFFER];
 
-	for(i=0;i<num_of_vols;i++){
+	for(i=0; i < num_of_volumes; i++){
 	
-		fgets(buffer,sizeof(buffer),fp);
+		fgets(buffer, sizeof(buffer), fp);
 
-		sscanf(buffer,"%d %d %d %d %d %d %d %d",vfirst+i,vsecond+i,vthird+i,vfourth+i,vfifth+i,vsixth+i,vseventh+i,veighth+i);
+		sscanf(buffer, "%d %d %d %d %d %d %d %d", (v1 + i), (v2 + i), (v3 + i), (v4 + i), (v5 + i), (v6 + i), (v7 + i), (v8 + i));
 
-		printf("%d - %d - %d - %d - %d - %d - %d - %d\n",vfirst[i],vsecond[i],vthird[i],vfourth[i],vfifth[i],vsixth[i],vseventh[i],veighth[i]);	
+		if(DEBUG) printf("%d - %d - %d - %d - %d - %d - %d - %d\n", v1[i], v2[i], v3[i], v4[i], v5[i], v6[i], v7[i], v8[i]);	
 
 
 	}
@@ -76,40 +88,72 @@ void read_vol(FILE *fp,int num_of_vols, int *vfirst,int *vsecond,int *vthird,int
 }
 
 
-void read_elements(FILE *fp,int num_of_elements,int *efirst,int *esecond,int *ethird,int *efourth)
+void read_elements(FILE *fp, int num_of_elements, int *e1, int *e2, int *e3, int *e4)
 {
 
 	int i;
 	char buffer[BUFFER];
 
-	for(i=0;i<num_of_elements;i++){
+	for(i=0; i < num_of_elements; i++){
 	
-		fgets(buffer,sizeof(buffer),fp);
+		fgets(buffer, sizeof(buffer), fp);
 
-		sscanf(buffer,"%d %d %d %d",efirst+i,esecond+i,ethird+i,efourth+i);
+		sscanf(buffer, "%d %d %d %d", (e1 + i), (e2 + i), (e3 + i), (e4 + i));
 
-		printf("%d - %d - %d -%d \n",efirst[i],esecond[i],ethird[i],efourth[i]);	
+		if(DEBUG) printf("%d - %d - %d -%d \n", e1[i], e2[i], e3[i], e4[i]);	
 
 
 	}
 
 }
 
-void read_nodes(FILE *fp,int num_of_nodes,float *x,float *y,float *z)
+void read_nodes(FILE *fp, int num_of_nodes, float *x, float *y, float *z)
 {
 
 	int i;
 	char buffer[BUFFER];
 
-	for(i=0;i<num_of_nodes;i++){
+	for(i=0; i < num_of_nodes; i++){
 
-		fgets(buffer,sizeof(buffer),fp);
+		fgets(buffer, sizeof(buffer), fp);
 
-		sscanf(buffer,"%f %f %f",x+i,y+i,z+i);	
+		sscanf(buffer, "%f %f %f", (x + i), (y + i), (z + i));	
 
-		printf("%f - %f - %f \n",x[i],y[i],z[i]);
+		if(DEBUG) printf("%f - %f - %f \n", x[i], y[i], z[i]);
 
 	}
+
+}
+
+float *alloc_mem_nodes(int num_of_nodes){
+
+	float *p;
+
+	p = (float *)malloc(sizeof(float) * num_of_nodes);
+
+	return p;
+
+}
+
+int *alloc_mem_elements(int num_of_elements)
+{
+
+	int *p;
+
+	p = (int *)malloc(sizeof(int) * num_of_elements);
+
+	return p;
+
+}
+
+int *alloc_mem_volumes(int num_of_volumes)
+{
+	
+	int *p;
+
+	p = (int *)malloc(sizeof(int) * num_of_volumes);
+	
+	return p;
 
 }
 
@@ -122,23 +166,23 @@ FILE *open_file(char *filename)
 	if(fp != NULL)
 		printf("Open File: %s \n",filename);
 	else
-		printf("Error Opening file:%s");
+		printf("Error Opening file:%s \n",filename);
 
 	return fp;
 
 }
 
-void read_header(FILE *fp,int *header)
+int *read_header(FILE *fp)
 {
 
 	char buffer[BUFFER];
 	char *parts;
 	int i = 0;
-	int size;
-	int j;
+	int *header;
 
+	header = (int *)malloc(sizeof(int));
 
-	if(fgets(buffer,sizeof(buffer),fp)){
+	if(fgets(buffer,sizeof(buffer), fp)){
 
 		parts = strtok(buffer, " " );
 
@@ -146,9 +190,8 @@ void read_header(FILE *fp,int *header)
 				
 			if(i > 0){
 
-				size = sizeof(header)/sizeof(int);
 
-				header = (int *)realloc(header,sizeof(int)*i);
+				header = (int *)realloc(header,sizeof(int) * i);
 				
 				header[i] = atoi(parts);
 				
@@ -165,5 +208,7 @@ void read_header(FILE *fp,int *header)
 		}	
 
 	}
+
+	return header;
 
 }
