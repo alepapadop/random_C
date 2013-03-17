@@ -22,7 +22,7 @@ int main(){
 	float *x = NULL, *y = NULL, *z = NULL;
 	int *e1 = NULL, *e2 = NULL, *e3 = NULL, *e4 = NULL;	
 	int *v1 = NULL, *v2 = NULL, *v3 = NULL, *v4 = NULL, *v5 = NULL, *v6 = NULL, *v7 = NULL, *v8 = NULL;
-
+	
 	
 	fp = open_file(filename);		
 		
@@ -130,6 +130,13 @@ float *alloc_mem_nodes(int num_of_nodes){
 	float *p;
 
 	p = (float *)malloc(sizeof(float) * num_of_nodes);
+	
+	if( p == NULL){
+
+		printf("ERROR: Problem allocating memory for nodes \n");
+		exit(0);
+
+	}
 
 	return p;
 
@@ -142,7 +149,16 @@ int *alloc_mem_elements(int num_of_elements)
 
 	p = (int *)malloc(sizeof(int) * num_of_elements);
 
+	if( p == NULL ){
+
+		printf("ERROR: Problem allocating memory for elements \n");
+		exit(0);
+
+	}
+	
 	return p;
+
+	
 
 }
 
@@ -153,7 +169,15 @@ int *alloc_mem_volumes(int num_of_volumes)
 
 	p = (int *)malloc(sizeof(int) * num_of_volumes);
 	
+	if( p == NULL){
+
+		printf("ERROR: Problem allocating memory for volumes \n");
+		exit(0);
+
+	}
+
 	return p;
+
 
 }
 
