@@ -267,7 +267,9 @@ int *read_header(FILE *fp, int *total_line_counter)
 			parts = strtok(buffer, " " );
 
 			while(parts != NULL){
+
 				
+
 				if(i > 0){
 
 
