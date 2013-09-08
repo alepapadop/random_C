@@ -321,7 +321,8 @@ void calc(void *data, Transform *transform, vector<void *> *transform_stack, vec
 
         len = transform_stack->size();
 
-        for ( i = len - 1; i >= 0; --i) {
+
+        for ( i = *deep - 1 ; i >= 0; --i) {
 
             tmp = (Transform *)transform_stack->at(i);
             print_transform(tmp);
@@ -360,13 +361,14 @@ int main()
 
     Shape *shape1 = new_shape();
     Shape *shape2 = new_shape();
+    Shape *shape3 = new_shape();
 
     set_transform_translation(transform1, 1, 1, 1);
     set_transform_translation(transform2, 2, 2, 2);
 
     p_children1->push_back(shape1);
     p_children1->push_back(transform2);
-
+    p_children1->push_back(shape3);
 
     p_children2->push_back(shape2);
 
