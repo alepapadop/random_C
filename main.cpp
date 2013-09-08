@@ -296,6 +296,8 @@ void calc(void *data, Transform *transform, vector<void *> *transform_stack, vec
 
     if (get_node_type(data) == TRANSFORM) {
         transform_stack->push_back(data);
+    } else if (get_node_type(data) == GROUP) {
+        transform_stack->push_back(NULL);
     }
 
     if (p_children) {
@@ -325,8 +327,10 @@ void calc(void *data, Transform *transform, vector<void *> *transform_stack, vec
         for ( i = *deep - 1 ; i >= 0; --i) {
 
             tmp = (Transform *)transform_stack->at(i);
-            print_transform(tmp);
-            add_to_shape(data, tmp);
+            if (tmp != NULL) {
+                print_transform(tmp);
+                add_to_shape(data, tmp);
+            }
         }
     }
 
@@ -341,10 +345,15 @@ void vrml_calc(vector<void *> *node_stack)
 {
    vector<void *>::iterator it;
    int deep = -1;
-   Transform *transform = new_transform();
-   vector<void *> *transform_stack = new vector<void *>;
+
+
    for (it = node_stack->begin(); it != node_stack->end(); ++it) {
+       vector<void *> *transform_stack = new vector<void *>;
+       Transform *transform = new_transform();
+       cout << "*** START ***" << endl << endl;
        calc(*it, transform, transform_stack, NULL, &deep);
+       cout << "*** END ***" << endl << endl;
+       delete transform_stack;
    }
 
 }
@@ -355,16 +364,31 @@ int main()
 
     vector<void *> *p_children1 = new vector<void *>;
     vector<void *> *p_children2 = new vector<void *>;
+    vector<void *> *p_children3 = new vector<void *>;
+    vector<void *> *p_children4 = new vector<void *>;
+    vector<void *> *p_children5 = new vector<void *>;
+    vector<void *> *p_children6 = new vector<void *>;
+
+    Group  *group1 = new_group();
 
     Transform *transform1 = new_transform();
     Transform *transform2 = new_transform();
+    Transform *transform3 = new_transform();
+    Transform *transform4 = new_transform();
+    Transform *transform5 = new_transform();
 
     Shape *shape1 = new_shape();
     Shape *shape2 = new_shape();
     Shape *shape3 = new_shape();
+    Shape *shape4 = new_shape();
+    Shape *shape5 = new_shape();
+    Shape *shape6 = new_shape();
 
     set_transform_translation(transform1, 1, 1, 1);
     set_transform_translation(transform2, 2, 2, 2);
+    set_transform_translation(transform3, 5, 5, 5);
+    set_transform_translation(transform4, 7, 7, 7);
+    set_transform_translation(transform5, 10, 10, 10);
 
     p_children1->push_back(shape1);
     p_children1->push_back(transform2);
@@ -372,10 +396,27 @@ int main()
 
     p_children2->push_back(shape2);
 
+    p_children3->push_back(shape4);
+
+
+    p_children4->push_back(group1);
+    p_children5->push_back(transform5);
+    p_children5->push_back(shape6);
+    p_children6->push_back(shape5);
+
     transform1->children = p_children1;
     transform2->children = p_children2;
 
+    transform3->children = p_children3;
+
+    transform4->children = p_children4;
+    group1->children = p_children5;
+    transform5->children = p_children6;
+
+
     node_stack->push_back(transform1);
+    node_stack->push_back(transform3);
+    node_stack->push_back(transform4);
 
     vrml_calc(node_stack);
 
